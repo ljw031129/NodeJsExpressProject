@@ -1,8 +1,164 @@
-<h1>文章列表</h1>
+<!DOCTYPE html>
+<html>
+<head lang="zh-CN">
+    <meta charset="UTF-8">
+    <title><!--{{title}}--></title>
+    <link href="/bootstrap/dist/css/bootstrap.css" rel="stylesheet">
+    <link href="/angular-xeditable/dist/css/xeditable.css" rel="stylesheet">
 
-{{#each entries}}
-<p>
-    <a href="/article/{{id}}">{{title}}</a><br/>
-    Published: {{published}}
-</p>
-{{/each}}
+    <script src="/angular/angular.js"></script>
+    <script src="/jquery/dist/jquery.js"></script>
+    <script src="/angular-xeditable/dist/js/xeditable.js"></script>
+    <script src="/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+</head>
+<body>
+<div class="container" ng-app="app">
+    <div class="header">
+        <ul class="nav nav-pills pull-right" role="tablist">
+            <li role="presentation" class="active"><a href="#">Home</a></li>
+            <li role="presentation"><a href="#">About</a></li>
+            <li role="presentation"><a href="#">Contact</a></li>
+        </ul>
+        <h3 class="text-muted">协议管理</h3>
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
+
+            Name:
+            <input type="text" id="nameInput"/>
+            <input type="button" id="connectButton" value="Connect"
+                   onclick="connectWebSocket()"/>
+            <input type="button"
+                   id="disconnectButton"
+                   value="Disconnect"
+                   onclick="disconnectWebSocket()"/>
+            <input type="text" id="messageInput"/>
+            <input type="button" id="sendButton" value="Send"
+                   onclick="sendMessage()"/> <br/>
+
+            <div id="introduction">Send the following message and then see the messages received:
+                <ul>
+                    <li>MSG [ANY TEXT] - "MSG I love you!"</li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+    <div class="row">
+        <div class="col-xs-6"></div>
+        <div class="col-xs-6">
+            <div ng-controller="TextSimpleCtrl">
+                <a href="#" editable-text="user.name">{{ user.name || 'empty' }}</a>
+            </div>
+
+        </div>
+    </div>
+    <!--
+    {{#each entries}}
+    <p>
+        <a href="/article/{{id}}">{{title}}</a><br/>
+        Published: {{published}}
+    </p>
+    {{/each}}
+    -->
+
+
+</div>
+<script type="text/javascript">
+    //加载Anjular模型
+    var app = angular.module("app", ["xeditable", "ui.bootstrap"]);
+    app.run(function (editableOptions) {
+        editableOptions.theme = 'bs3';
+
+    });
+    app.controller('TextSimpleCtrl', function ($scope) {
+        $scope.user = {
+            name: 'awesome user'
+        };
+    });
+    var noSupportMessage = "Your browser cannot support WebSocket!";
+    var ws;
+    var name;
+
+    function appendMessage(message) {
+        $('body').append(message);
+    }
+
+    function connectSocketServer() {
+        var support = "MozWebSocket" in window ? 'MozWebSocket' : ("WebSocket" in window ? 'WebSocket' : null);
+
+        if (support == null) {
+            appendMessage("* " + noSupportMessage + "<br/>");
+            return;
+        }
+
+        appendMessage("* Connecting to server ..<br/>");
+        // create a new websocket and connect
+        // put name in path
+        ws = new window[support]('ws://localhost:2012/' + name);
+
+        // when data is comming from the server, this metod is called
+        ws.onmessage = function (evt) {
+            appendMessage("# " + evt.data + "<br />");
+        };
+
+        // when the connection is established, this method is called
+        ws.onopen = function () {
+            appendMessage('* Connection open<br/>');
+            /* $('#messageInput').attr("disabled", "");
+             $('#sendButton').attr("disabled", "");
+             $('#connectButton').attr("disabled", "disabled");
+             $('#disconnectButton').attr("disabled", "");
+             $('#nameInput').attr("disabled", "disabled");*/
+        };
+
+        // when the connection is closed, this method is called
+        ws.onclose = function () {
+            appendMessage('* Connection closed<br/>');
+            /*$('#messageInput').attr("disabled", "disabled");
+             $('#sendButton').attr("disabled", "disabled");
+             $('#connectButton').attr("disabled", "");
+             $('#disconnectButton').attr("disabled", "disabled");
+             $('#nameInput').attr("disabled", "");*/
+        }
+    }
+
+    function sendMessage() {
+        if (ws) {
+            var messageBox = document.getElementById('messageInput');
+            ws.send(messageBox.value);
+            messageBox.value = "";
+        }
+    }
+
+    function disconnectWebSocket() {
+        if (ws) {
+            ws.close();
+        }
+    }
+
+    function setCookie(name, value, expiredays) {
+        var exdate = new Date();
+        exdate.setDate(exdate.getDate() + expiredays);
+        document.cookie = name + "=" + escape(value) + ((expiredays == null) ? "" : ";expires=" + exdate.toGMTString());
+    }
+
+    function connectWebSocket() {
+        name = $('#nameInput').val();
+        if (name.length == 0) {
+            alert("Name is required!");
+            return;
+        }
+        connectSocketServer();
+    }
+
+    window.onload = function () {
+        /* $('#messageInput').attr("disabled", "disabled");
+         $('#sendButton').attr("disabled", "disabled");
+         $('#disconnectButton').attr("disabled", "disabled");*/
+    }
+
+</script>
+</body>
+</html>
+

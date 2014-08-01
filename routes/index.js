@@ -16,8 +16,11 @@ var router = express.Router();
 /*app.get('/api', function(request, response) {
     response.send({name:"张三",age:40});
 });*/
+var path = require('path');
 var blogEngine=require('../blog');
 router.get('/', function(req, res) {
-    res.render('index',{title:"最近文章", entries:blogEngine.getBlogEntries()});
+    var html = path.normalize(__dirname + '/../views/index.html');
+    res.sendfile(html);
+    //res.render('index',{title:"最近文章", entries:blogEngine.getBlogEntries()});
 });
 module.exports = router;

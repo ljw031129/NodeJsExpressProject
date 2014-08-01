@@ -16,7 +16,7 @@ var users = require('./routes/users');
 var blogEngine=require('./blog');
 var app = express();
 //加载hbs模块
-var hbs=require('hbs');
+//var hbs=require('hbs');
 //加载数据模型
 
 // view engine setup
@@ -26,7 +26,8 @@ app.set('views', path.join(__dirname, 'views'));
 //指定模板的后缀名
 app.set('view engine', 'html');
 //运行hbs模板
-app.engine('html',hbs.__express);
+//app.engine('html',hbs.__express);
+
 app.use(favicon());
 app.use(logger('dev'));
 app.use(bodyParser.json());
@@ -35,7 +36,7 @@ app.use(cookieParser());
 //设定静态文件目录，比如本地文件
 // 目录为demo/public/images，访问
 // 网址则显示为http://localhost:3000/images
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'bower_components')));
 
 //设置访问的具体目录
 app.use('/', routes);
