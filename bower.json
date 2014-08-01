@@ -1,0 +1,20 @@
+{
+  "name": "NodeJsExpressProject",
+  "version": "0.1.0",
+  "authors": [
+    "鲁建伟 <ljw031129@hotmail.com>"
+  ],
+  "description": "NodeJsExpressProject",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.2.0"
+  }
+}
